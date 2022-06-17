@@ -42,6 +42,7 @@ def frequency_bought_together():
         product_ids = a = get_product_id_from_redis(industry_id, province_id, product_barcode)
         result["product_id"] = product_ids
         data = json.dumps(result, ensure_ascii=False)
+        print(data)
         return data
     except Exception as e:
         return "Exception: " + str(e)
