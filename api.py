@@ -41,9 +41,10 @@ def frequency_bought_together():
         for product_id in product_ids:
             product_name = df_orders[df_orders.product_id == product_id]["product_name"].values[0]
             results.append({"product_id": product_id, "product_name": product_name})
-        result["result"] = results
+
+        result["product_name"] = df_orders[df_orders.product_barcode == product_barcode].product_name.values[0]
+        result["products"] = results
         data = json.dumps(result, ensure_ascii=False)
-        print(data)
         return data
     except Exception as e:
         return "Exception: " + str(e)
