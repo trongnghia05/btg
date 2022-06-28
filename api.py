@@ -3,17 +3,17 @@ import redis
 import pandas as pd
 from numpy import product
 
-with open("data/20220620_frequency_bougth_together.json", "r") as f:
+with open("data/btg_tinh_theo_product_id.json", "r") as f:
     product_id_btgs = json.load(f)
 
 app = Flask(__name__)
 r = redis.Redis(host='localhost', port=6379, db=0)
-df_orders = pd.read_csv("data/df_orders_full_industry_province.csv")
+df_order = pd.read_csv("data/df_order_new.csv")
 
-def get_product_id_from_redis(industry_id, province_id, product_barcode):
-    product_objects = product_id_btgs[product_barcode]
+def get_product_id_from_redis(industry_id, province, product_id):
+    product_objects = product_id_btgs[product_id]
     for product_object in product_objects:
-        if product_object["industry_id"] == str(industry_id) and product_object["province_id"] == str(province_id):
+        if product_object["industry_id"] == str(industry_id) and product_object["province"] == province:
             return product_object["list_product_id"]
     return ""
 
@@ -24,25 +24,25 @@ def frequency_bought_together():
 
 
     try:
-        if request.args.get("barcode") is None:
+        if request.args.get("product_id") is None:
             return ""
         else:
-            product_barcode = request.args.get("barcode")
+            product_id = request.args.get("product_id")
         if request.args.get("industry_id") is None:
             return ""
         else:
             industry_id = request.args.get("industry_id")
-        if request.args.get("province_id") is None:
+        if request.args.get("industry_id") is None:
             return ""
         else:
-            province_id = request.args.get("province_id")
-        product_ids = get_product_id_from_redis(industry_id, province_id, product_barcode)
+            province = request.args.get("province")
+        product_ids = get_product_id_from_redis(industry_id, province, product_id)
         results = []
-        for product_id in product_ids:
-            product_name = df_orders[df_orders.product_id == product_id]["product_name"].values[0]
-            results.append({"product_id": product_id, "product_name": product_name})
+        for product_id_rc in product_ids:
+            product_name = df_order[df_order.product_id == int(product_id_rc)]["product_name"].values[0]
+            results.append({"product_id": int(product_id_rc), "product_name": product_name})
 
-        result["product_name"] = df_orders[df_orders.product_barcode == product_barcode].product_name.values[0]
+        result["product_name"] = df_order[df_order.product_id == int(product_id)].product_name.values[0]
         result["products"] = results
         data = json.dumps(result, ensure_ascii=False)
         return data
