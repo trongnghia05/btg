@@ -3,10 +3,10 @@ import redis
 import pandas as pd
 from numpy import product
 
-with open("data/btg_tinh_theo_product_id.json", "r") as f:
+with open("data/20220707_frequency_bougth_together_by_product_id.json", "r") as f:
     product_id_btgs_product_id = json.load(f)
 
-with open("data/btg_tinh_theo_barcode.json", "r") as f:
+with open("data/20220707_frequency_bougth_together_by_barcode.json", "r") as f:
     product_id_btgs_barcode = json.load(f)
 
 app = Flask(__name__)
